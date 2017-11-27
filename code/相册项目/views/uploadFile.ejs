@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>相册首页</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
+</head>
+
+<body>
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"
+                    aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">所有相册</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li class="active">
+                    <a href="/up">上传按钮
+                        <span class="sr-only">(current)</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container-fluid -->
+</nav>
+
+<div class="container">
+    <form method="post" action="#" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="exampleInputEmail1">选择存放的目标文件夹</label>
+            <select class="form-control" name="foldername">
+                <% for(var i = 0;i < folders.length;i++){%>
+                <option><%= folders[i].name %></option>
+                <% } %>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="exampleInputFile">选择照片</label>
+            <input type="file" name="uploadfile">
+            <p class="help-block">不要超过1M大小.</p>
+        </div>
+        <button type="submit" class="btn btn-default">确定上传</button>
+    </form>
+
+</div>
+
+
+
+<script src="js/jquery-3.0.0.js"></script>
+<script src="js/bootstrap.min.js"></script>
+
+</body>
+
+</html>

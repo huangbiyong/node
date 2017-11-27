@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <link rel="stylesheet" href="css/master.css"/>
+</head>
+<body>
+
+    <div class="wrapper">
+        <div class="title">相册列表:
+            <a class="title-btn" href="/uploadFile">我要上传</a>
+            <span class="title-status">
+                <a href="javascript:;">首页</a>
+            </span>
+        </div>
+        <div class="photo clearfix">
+            <ul>
+
+                <%
+                for (var i=0; i<allbums.length; i++) {
+                     if (allbums[i].isDire == true) {
+                %>
+                <li class="folder"><a href="<%= allbums[i].name %>"><%= allbums[i].name %></a></li>
+                <%
+                     }else {
+                %>
+                         <li><a href="javascript:;"><img src="<%= allbums[i].name %>"></a></li>
+                <%
+                     }
+                  }
+                %>
+
+
+            </ul>
+        </div>
+    </div>
+
+</body>
+</html>
