@@ -1,3 +1,5 @@
+![image](http://i2.hdslb.com/bfs/archive/88d701b2b78445f2c4be2f16b1025edca196b59b.jpg)
+
 ## node，npm，express 启动
 
 #### 1. node启动
@@ -574,7 +576,7 @@ app.use(route.get("/other", other));
 // 相对匹配
 // app.use(path, callback);
 
-app.listen(3000);
+app.listen(30![image](http://note.youdao.com/favicon.ico)![image](http://note.youdao.com/favicon.ico)00);
 ```
 #### 5. koa 静态资源文件
 使用koa-static 模块，把需要的设置的静态资源文件路径作为参数，然后设置use就可以了。
