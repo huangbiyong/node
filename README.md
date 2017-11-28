@@ -35,17 +35,17 @@
 var http = require("http");
 
 var server = http.createServer(function (req,res) {
-res.writeHead(200,{"Content-type":"text/html;charset=UTF-8"});
-console.log("Hello world");
-res.end("Hello world");
+    res.writeHead(200,{"Content-type":"text/html;charset=UTF-8"});
+    console.log("Hello world");
+    res.end("Hello world");
 
 });
 
 server.listen(3000,"localhost");
 
 ```
-执行 *node index.js*,在浏览器打开 *http://localhost:3000/*
-![image](http://upload-images.jianshu.io/upload_images/9242195-32213cfd0893bd79.jpeg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+   执行 *node index.js*,在浏览器打开 *http://localhost:3000/* 
+   ![image](http://upload-images.jianshu.io/upload_images/9242195-32213cfd0893bd79.jpeg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 #### 2.req.url 返回不同的数据
 - req.url是请求的路径，从端口号后，如：http://localhost:3000/home?name=hello，则 req.url 的值为 “/home?name=hello”
@@ -55,18 +55,18 @@ var http = require("http");
 
 var server = http.createServer(function (req,res) {
 
-console.log("服务器接收到了请求，地址为：" + req.url);
+    console.log("服务器接收到了请求，地址为：" + req.url);
 
-if(req.url == "/home") {
-res.writeHead(200,{"Content-type":"text/html;charset=UTF-8"});
-res.end("<h1>主页</h1>");
-}else if(req.url == "/nav") {
-res.writeHead(200,{"Content-type":"text/html;charset=UTF-8"});
-res.end("<h1>导航</h1>");
-}}else {
-res.writeHead(404,{"Content-type":"text/html;charset=UTF-8"});
-res.end("<h1>页面不存在</h1>");
-}
+    if(req.url == "/home") {
+        res.writeHead(200,{"Content-type":"text/html;charset=UTF-8"});
+        res.end("<h1>主页</h1>");
+    }else if(req.url == "/nav") {
+        res.writeHead(200,{"Content-type":"text/html;charset=UTF-8"});
+        res.end("<h1>导航</h1>");
+    }}else {
+        res.writeHead(404,{"Content-type":"text/html;charset=UTF-8"});
+        res.end("<h1>页面不存在</h1>");
+    }
 });
 
 server.listen(3000,"127.0.0.1");
@@ -83,20 +83,20 @@ var http = require("http");
 var fs = require("fs");
 
 var server = http.createServer(function (req,res) {
-if (req.url == "/home") {
-fs.readFile("./home.html",function(err,data){
-res.writeHead(200,{"Content-type":"text/html;charset=UTF-8"});
-res.end(data);
-});
-}else if(req.url == "/pulic/home.css") {
-fs.readFile("./resource/css.css",function (err,data) {
-res.writeHead(200,{"Content-type":"text/css"});  //不是UTF-8
-res.end(data);
-});
-}else {
-res.writeHead(404,{"Content-type":"text/html;charset=UTF-8"});
-res.end("请求地址资源不存在");
-}
+    if (req.url == "/home") {
+        fs.readFile("./home.html",function(err,data){
+            res.writeHead(200,{"Content-type":"text/html;charset=UTF-8"});
+            res.end(data);
+        });
+    }else if(req.url == "/pulic/home.css") {
+        fs.readFile("./resource/css.css",function (err,data) {
+            res.writeHead(200,{"Content-type":"text/css"});  //不是UTF-8
+            res.end(data);
+        });
+    }else {
+        res.writeHead(404,{"Content-type":"text/html;charset=UTF-8"});
+        res.end("请求地址资源不存在");
+    }
 });
 
 server.listen(3000,"127.0.0.1");
@@ -119,44 +119,44 @@ server.listen(3000,"127.0.0.1");
 - 文件夹的子文件遍历，fs的readdir可以遍历一个指定的文件夹;
 - fs.stat 可以读取指定文件的相关信息，stats.isDirectory()可以判断是否是文件夹，stats.isFile()判断是否是文件;
 ```
-例如：photoName 为uploads下的images文件夹 (photoName = "images")
+   例如：photoName 为uploads下的images文件夹 (photoName = "images")
+        
+   var path = require("path"); 模块的extname函数能获取到文件格式，返回如 “.jpg  .png”
 
-var path = require("path"); 模块的extname函数能获取到文件格式，返回如 “.jpg  .png”
+   fs.readdir("./uploads/" + photoName,function(err,files){
+        if(err){
+            //callback("没有找到Uploads文件",null);
+            return;
+        }
 
-fs.readdir("./uploads/" + photoName,function(err,files){
-if(err){
-//callback("没有找到Uploads文件",null);
-return;
-}
+        var allImages = [];
+        (function iterator(i){    //循环实现全部子文件的遍历
+            if(i == files.length){
+                //结束了
+                //callback(null,allImages);
+                return;//所有的除了报错可以不写也没关系，其他的时候一定记得加上
+            }
+            //uploads/当前点击的“相册文件夹”/相册文件
+            fs.stat("./uploads/" + photoName + "/" + files[i],function(err,stats){
+                if(err){
+                    throw err;
+                }
+                /*
+                    如果需要整个全部显示，那么你判断是否是图片或文件夹，如果二者满足其一，则push到allImages数组，
+                */
+                if (stats.isDirectory()) {
+                    allImages.push({name: files[i],isDire:true, path:"./uploads/" + files[i]});
+                }else {
+                    var extname = path.extname(files[i]).toLowerCase();
+                    if (extname == ".jpg" || extname == ".png" || extname == ".jpeg" || extname == ".gif" || extname == ".bmp") {
+                        allImages.push({name: files[i], isDire:false, path:"uploads/" + files[i]});
+                    }
+                }
+                iterator(i+1);
+            });
+        })(0);
 
-var allImages = [];
-(function iterator(i){    //循环实现全部子文件的遍历
-if(i == files.length){
-//结束了
-//callback(null,allImages);
-return;//所有的除了报错可以不写也没关系，其他的时候一定记得加上
-}
-//uploads/当前点击的“相册文件夹”/相册文件
-fs.stat("./uploads/" + photoName + "/" + files[i],function(err,stats){
-if(err){
-throw err;
-}
-/*
-如果需要整个全部显示，那么你判断是否是图片或文件夹，如果二者满足其一，则push到allImages数组，
-*/
-if (stats.isDirectory()) {
-allImages.push({name: files[i],isDire:true, path:"./uploads/" + files[i]});
-}else {
-var extname = path.extname(files[i]).toLowerCase();
-if (extname == ".jpg" || extname == ".png" || extname == ".jpeg" || extname == ".gif" || extname == ".bmp") {
-allImages.push({name: files[i], isDire:false, path:"uploads/" + files[i]});
-}
-}
-iterator(i+1);
-});
-})(0);
-
-});
+    });
 
 ```
 
@@ -170,8 +170,8 @@ var name = "chase";
 var age = 20;
 
 var obj = {
-name: name,
-age: age
+    name: name,
+    age: age
 }
 
 console.log("已经执行");
@@ -179,7 +179,7 @@ exports.obj = obj;  // 向外暴露信息
 
 ------------------------------------------------------------
 
-此为index.js 文件进行调用:
+此为index.js 文件进行调用: 
 
 var foo = require("./public/foo.js");
 console.log(typeof foo);     //object     对象
@@ -192,22 +192,22 @@ console.log(foo.obj.name);
 此为 people.js文件：
 
 function People(name,sex,age) {
-this.name = name;
-this.sex = sex;
-this.age = age;
+    this.name = name;
+    this.sex = sex;
+    this.age = age;
 }
 
 People.prototype = {
-sayHello: function () {
-console.log(this.name+","+this.sex+","+this.age);
-}
+    sayHello: function () {
+        console.log(this.name+","+this.sex+","+this.age);
+    }
 }
 
 module.exports = People;  //暴露一个方法（类）
 
 -------------------------------------------------------------
 
-此为index.js 文件进行调用:
+此为index.js 文件进行调用: 
 
 
 var people = require("./public/people");
@@ -222,18 +222,18 @@ console.log(chase.name);
 - 引用require("silly-datetime") 模块，可以对日期进行格式化处理；
 ```
 /*
-format:两个参数
-第一个：时间对象，就是你需要格式化的字符对象
-第二个：传入你需要指定的时间格式
+    format:两个参数
+    第一个：时间对象，就是你需要格式化的字符对象
+    第二个：传入你需要指定的时间格式
 
-year：年
-month:月
-day:天
-hour：小时
-Minute：分钟
-second: 秒
+    year：年
+    month:月
+    day:天
+    hour：小时
+    Minute：分钟
+    second: 秒
 
-Y：年   M：月   D：日   H：小时  m：分钟（小写）, s: 秒（小写）
+    Y：年   M：月   D：日   H：小时  m：分钟（小写）, s: 秒（小写）
 */
 
 var sd = require("silly-datetime");
@@ -252,56 +252,56 @@ console.log(newDate1); // 输出： 2017-11-27 15:43:47
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="X-UA-Compatible" content="ie=edge">
-<title>表单提交  动脑学院作业</title>
-<link rel="stylesheet" href="css/master.css"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>表单提交  动脑学院作业</title>
+    <link rel="stylesheet" href="css/master.css"/>
 </head>
 <body>
-<div class="wrapper">
-<div class="title">注册中心
-<span class="title-status"><a href="index.html">返回相册</a></span>
-</div>
-<form class="form"   action="http://localhost:3000/dopost" method="post">
-<ul>
-<li><input type="text" name="name" placeholder="请输入您的名字" class="txt"/></li>
-<li><input type="password" name="password" placeholder="请输入您的密码" class="txt"/></li>
-<li><input type="submit" placeholder="" class="btn"/></li>
-</ul>
-<div class="cl"></div>
-</form>
-</div>
+    <div class="wrapper">
+        <div class="title">注册中心
+            <span class="title-status"><a href="index.html">返回相册</a></span>
+        </div>
+        <form class="form"   action="http://localhost:3000/dopost" method="post">
+            <ul>
+                <li><input type="text" name="name" placeholder="请输入您的名字" class="txt"/></li>
+                <li><input type="password" name="password" placeholder="请输入您的密码" class="txt"/></li>
+                <li><input type="submit" placeholder="" class="btn"/></li>
+            </ul>
+            <div class="cl"></div>
+        </form>
+    </div>
 </body>
 </html>
 ```
 - 创建form.js进行，实现服务接收数据
 ```
 var http = require("http");
-var querystring = require("querystring");
-//将参数 & 字符串转换对象，
+var querystring = require("querystring"); 
+//将参数 & 字符串转换对象， 
 //如 “name=hello&password=123456” --> {name:"hello",password:"123456"}
 
 var server = http.createServer(function (req, res) {
+    
+	if (req.url == "/dopost" && req.method.toLowerCase() == "post") {
 
-if (req.url == "/dopost" && req.method.toLowerCase() == "post") {
+		var allData = "";
+		req.addListener("data",function(chunk){
+			allData += chunk;  //数据是分段接收的
+		});
 
-var allData = "";
-req.addListener("data",function(chunk){
-allData += chunk;  //数据是分段接收的
-});
+		req.addListener("end",function () {
+            console.log(typeof allData);   //输出 string
+			console.log(allData); //输出 name=hello&password=123456
 
-req.addListener("end",function () {
-console.log(typeof allData);   //输出 string
-console.log(allData); //输出 name=hello&password=123456
+			var dateString = allData.toString();
+			var dataObj = querystring.parse(dateString)
+			console.log("name: "+dataObj.name);  // 输出 name: hello
 
-var dateString = allData.toString();
-var dataObj = querystring.parse(dateString)
-console.log("name: "+dataObj.name);  // 输出 name: hello
-
-res.end("success");
-});
-}
+			res.end("success");
+        });
+	}
 });
 
 server.listen(3000,"127.0.0.1");
@@ -321,98 +321,98 @@ var sd = require("silly-datetime");
 var fs = require("fs");
 
 http.createServer(function (req, res) {
-if (req.url == "/upload" && req.method.toLowerCase() == "post") {
-var form = new formidable.IncomingForm(); //创建IncomingForm对象
-form.uploadDir = "./static/images";  //保存的路径
+    if (req.url == "/upload" && req.method.toLowerCase() == "post") {
+        var form = new formidable.IncomingForm(); //创建IncomingForm对象
+        form.uploadDir = "./static/images";  //保存的路径
 
-/*
-fields: 提交的基本数据（name： username, age）
-files: 提交的文件数据 (name： upload)
-*/
+       /*
+          fields: 提交的基本数据（name： username, age）
+          files: 提交的文件数据 (name： upload)
+       */
 
-form.parse(req, function (err, fields, files) {
-res.writeHead(200, {"Content-type":"text/plain"});
-res.write("received upload:");
+        form.parse(req, function (err, fields, files) {
+            res.writeHead(200, {"Content-type":"text/plain"});
+            res.write("received upload:");
 
-var ran = parseInt((Math.random()*10000).toFixed(0));
-var newDate = sd.format(new Date(), "YYYYMMDDHHmmss");
-var extname = path.extname(files.upload.name);
-var oldpath = __dirname + "/" + files.upload.path;
-var newpath = __dirname + "/static/images/" + newDate + ran + extname;
+            var ran = parseInt((Math.random()*10000).toFixed(0));
+            var newDate = sd.format(new Date(), "YYYYMMDDHHmmss");
+            var extname = path.extname(files.upload.name);
+            var oldpath = __dirname + "/" + files.upload.path;
+            var newpath = __dirname + "/static/images/" + newDate + ran + extname;
 
-console.log("__dirname: " + __dirname); //  /Users/chase/Pictures/MyCodes/codes
-console.log("oldpath: " + oldpath);     //  /Users/chase/Pictures/MyCodes/codes/static/images/upload_ce6324572d05a4270d3cf20259f45f27
+            console.log("__dirname: " + __dirname); //  /Users/chase/Pictures/MyCodes/codes
+            console.log("oldpath: " + oldpath);     //  /Users/chase/Pictures/MyCodes/codes/static/images/upload_ce6324572d05a4270d3cf20259f45f27
 
 
-//不同路径下的文件更名 + 移动（这里文件已经在/static/images下，只是对其进行重命名）
-fs.rename(oldpath,newpath,function (err) {
-if (err) {
-throw Error("失败");
-}
-res.writeHead(200, {"Content-type": "text/plain"});
-res.end("success");
-});
+            //不同路径下的文件更名 + 移动（这里文件已经在/static/images下，只是对其进行重命名）
+            fs.rename(oldpath,newpath,function (err) {
+                if (err) {
+                    throw Error("失败");
+                }
+                res.writeHead(200, {"Content-type": "text/plain"});
+                res.end("success");
+            });
 
-res.end(util.inspect({fields:fields, files: files}));
-});
+            res.end(util.inspect({fields:fields, files: files}));
+        });
 
-return;
-}
+        return;
+    }
 
-//表示get请求时，获取渲染html文件
-res.writeHead(200, {"Content-type":"text/html"});
-res.end(
-'<form action="/upload" enctype="multipart/form-data" method="post">'+
-'<input type="text" name="username"><br>'+
-'<input type="text" name="age"><br>'+
-'<input type="file" name="upload" multiple="multiple"><br>'+
-'<input type="submit" value="Upload">'+
-'</form>'
-)
+    //表示get请求时，获取渲染html文件
+    res.writeHead(200, {"Content-type":"text/html"});
+    res.end(
+        '<form action="/upload" enctype="multipart/form-data" method="post">'+
+        '<input type="text" name="username"><br>'+
+        '<input type="text" name="age"><br>'+
+        '<input type="file" name="upload" multiple="multiple"><br>'+
+        '<input type="submit" value="Upload">'+
+        '</form>'
+    )
 
 }).listen(3000);
 ```
 
 #### 10. ejs的使用
 - ejs 是能动态渲染到html，使html看起来更生动和实用
-- 实用 npm install ejs --save 安装ejs
+- 实用 npm install ejs --save 安装ejs 
 - 引用 var ejs = require("ejs");
 - 创建 index.ejs 文件,用来显示;
 - 创建 ejs.js 设置index.ejs数据；
 ```
-index.ejs文件：
+index.ejs文件：   
 
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport"
-content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-<meta http-equiv="X-UA-Compatible" content="ie=edge">
-<title>Document</title>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
 
 
 </head>
 <body>
 
-<div> num的值 <%= num %></div>
-<ul>
+    <div> num的值 <%= num %></div>
+    <ul>
 
-<%
-for(var i=0;i<list.length;i++){
-if(list[i].age < 20){
+        <%
+            for(var i=0;i<list.length;i++){
+                if(list[i].age < 20){
 
-%>
-<li>
-<span style="color:red;"><%= list[i].title %></span>
-<span style="color:green;"><%= list[i].age %></span>
-</li>
-<%
-}
-}
-%>
+        %>
+               <li>
+                   <span style="color:red;"><%= list[i].title %></span>
+                   <span style="color:green;"><%= list[i].age %></span>
+               </li>
+        <%
+               }
+            }
+        %>
 
-</ul>
+    </ul>
 
 </body>
 </html>
@@ -427,40 +427,40 @@ var ejs = require("ejs");
 
 http.createServer(function (req, res) {
 
-fs.readFile("./views/index.ejs", function (err,stats) {
+    fs.readFile("./views/index.ejs", function (err,stats) {
 
-var template = stats.toString();
-var data = {
-num: 1,
-list:[
-{
-title:"Hello1",
-age:18
-},
-{
-title:"Hello2",
-age:19
-},
-{
-title:"Hello3",
-age:20
-}
-]
-}
+        var template = stats.toString();
+        var data = {
+            num: 1,
+            list:[
+                {
+                    title:"Hello1",
+                    age:18
+                },
+                {
+                    title:"Hello2",
+                    age:19
+                },
+                {
+                    title:"Hello3",
+                    age:20
+                }
+            ]
+        }
 
-var html = ejs.render(template,data);
+        var html = ejs.render(template,data);
 
-console.log("stats: " + typeof stats);
-console.log("template: " + typeof template);
-console.log("html: " + typeof html);
+        console.log("stats: " + typeof stats);
+        console.log("template: " + typeof template);
+        console.log("html: " + typeof html);
 
-console.log(stats);
-console.log(html);
+        console.log(stats);
+        console.log(html);
 
-res.writeHead(200,{"Content-type":"text/html;charset=UTF-8"});
-res.end(html);
+        res.writeHead(200,{"Content-type":"text/html;charset=UTF-8"});
+        res.end(html);
 
-});
+    });
 
 }).listen(3000,"127.0.0.1");
 ```
@@ -476,12 +476,217 @@ res.end(html);
 - use 不考虑http的请求方法；
 
 ```
-如果path 设置为’/’,则
-GET /
-PUT /foo
-POST /foo/bar
-均是中间件的作用范围
+ 如果path 设置为’/’,则 
+ GET / 
+ PUT /foo 
+ POST /foo/bar
+ 均是中间件的作用范围
 ```
+
+
+## koa 学习
+
+#### 1. koa 和 express 的区别
+```
+官网：http://www.koacn.com/ 
+开发团队：Express原班人马
+Express弱点：不能忍的callback（函调函数）
+优点：可以免除重复繁琐的回调函数嵌套，并极大地提升常用错误处理效率
+node版本建议：v7.6.0以上
+特点：是为ES6而生的，并非ES5，
+```
+需要使用npm install koa --save 来安装koa
+
+#### 2. koa 的基础应用
+```
+var Koa = require("koa");
+var app = new Koa();
+
+//context
+var home = function (ctx) {
+    //ctx.request  表示请求
+    //ctx.response 表示http 响应
+
+    //ctx.response.body属性就是发送给用户得内容
+
+    console.log(ctx);
+    ctx.response.type = "html";
+    ctx.response.body = "hello"
+}
+
+//模糊匹配   和 express .use 相似
+app.use(home);
+app.listen(3000);
+```
+- 首先引用koa模块require("koa")；
+- 创建koa对象；
+- 使用use进行回调，与express .use 方法相似，都是模糊匹配；
+- 调用listen进行监听和开始服务；
+- 回调方法中有两个参数，ctx(上下文) ，next(下一个中间件)；
+- ctx.response.body 属性就是发送给用户得内容，将会显示在浏览器中；
+- ctx.response.type 设置响应的文本类型；
+
+#### 3.koa 读取静态文件
+使用 fs.createReadStream 流的方式进行读取
+```
+var Koa = require("koa");
+var app = new Koa();
+var fs = require("fs");
+
+var main = function (ctx) {
+    //返回文件
+    /*
+       不能使用fs.readFile
+    */
+    ctx.response.type = "html";
+    ctx.response.body = fs.createReadStream("./template.html");
+}
+
+app.use(main);
+
+app.listen(3000);
+```
+#### 4.koa route绝对匹配
+使用koa-route 模块，可以进行get，post 等方式的路由绝对匹配，如果不实用route模块，直接进行use调用，则为相对匹配。
+```
+var Koa = require("koa");
+var app = new Koa();
+var route = require("koa-route");
+
+// 实现 get 路由
+
+var home = function (ctx) {
+    ctx.response.type = "html";
+    ctx.response.body = "welcome to home";
+
+}
+
+var other = function (ctx) {
+    ctx.response.type = "html";
+    ctx.response.body = "welcome to other";
+}
+
+
+// 绝对匹配
+app.use(route.get("/", home));
+app.use(route.get("/other", other));
+
+// 相对匹配
+// app.use(path, callback);
+
+app.listen(3000);
+```
+#### 5. koa 静态资源文件
+使用koa-static 模块，把需要的设置的静态资源文件路径作为参数，然后设置use就可以了。
+```
+var Koa = require("koa");
+var app = new Koa();
+var koastatic = require("koa-static");
+var path = require("path");
+
+//设置静态资源
+var main = koastatic(path.join(_dirname));
+
+// 就可以访问这么目录下的所有文件
+app.use(main);
+
+app.listen(3000);
+```
+#### 6. koa 请求重定向
+在回调的响应属性redirect，设置重定向的路由；
+```
+var Koa = require("koa");
+var app = new Koa();
+var route = require("koa-route");
+
+var login = function (ctx) {
+    ctx.response.body = "login page"
+}
+
+var user = function (ctx) {
+    ctx.response.body = "user page"
+    ctx.response.redirect("/login");
+    console.log("hello login");
+    //重定向到 /login
+}
+
+app.use(route.get("/login",login));
+app.use(route.get("/user", user));
+
+app.listen(3000);
+```
+#### 7. koa 中间件
+koa 中间件 之间的处理是通过next()来现实的，执行next()时，将会跳转到匹配的下一个中间价，执行结束后，在回到原处，往下执行。例如以下:
+```
+var Koa = require("koa");
+var app = new Koa();
+
+var login = function (ctx, next) {
+
+    /*
+      ctx.response.body = "login";
+      next();
+      浏览器显示  main
+
+
+      next();
+      ctx.response.body = "login";
+      浏览器显示  login
+
+
+      总结： 说明在执行next()时，将会跳转到匹配的下一个中间价，执行结束后，在回到原处，往下执行
+
+     */
+
+    next();
+    ctx.response.body = "login";
+    //next();
+}
+
+var main = function (ctx) {
+    ctx.response.body = "main";
+}
+
+app.use(login);
+app.use(main);
+
+app.listen(3000);
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
